@@ -48,6 +48,18 @@ if(isset($_GET['id']) && $_GET['id'] > 0){
                 <textarea name="specs" id="" cols="30" rows="2" class="form-control form no-resize summernote"><?php echo isset($specs) ? $specs : ''; ?></textarea>
 			</div>
             <div class="form-group">
+                <label for="name" class="control-label">Variant</label>
+                <input type="text" name="variant" id="variant" class="form-control rounded-0" required value="<?php echo isset($variant) ?$variant : '' ?>" />
+            </div>
+            <div class="form-group">
+                <label for="name" class="control-label">Quantity</label>
+                <input type="text" name="initial" id="initial" class="form-control rounded-0" required value="<?php echo isset($available) ?$available : '' ?>" />
+            </div>
+            <div class="form-group">
+                <label for="name" class="control-label">Price</label>
+                <input type="text" name="price" id="price" class="form-control rounded-0" required value="<?php echo isset($price) ?$price : '' ?>" />
+            </div>
+            <div class="form-group">
 				<label for="status" class="control-label">Status</label>
                 <select name="status" id="status" class="custom-select selevt">
                 <option value="1" <?php echo isset($status) && $status == 1 ? 'selected' : '' ?>>Active</option>

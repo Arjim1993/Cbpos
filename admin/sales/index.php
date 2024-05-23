@@ -77,7 +77,7 @@ $date_end = isset($_GET['date_end']) ? $_GET['date_end'] :  date("Y-m-d") ;
                     $gtotal = 0;
                         $qry = $conn->query("SELECT * FROM `sales` where date(date_created) between '{$date_start}' and '{$date_end}' order by unix_timestamp(date_created) desc ");
                         while($row = $qry->fetch_assoc()):
-                            $olist = $conn->query("SELECT ol.*,p.name,b.name as bname,concat(c.firstname,' ',c.lastname) as name,c.email,o.date_created,cc.category,i.variant, o.payment_method FROM order_list ol inner join orders o on o.id = ol.order_id inner join inventory i on ol.inventory_id = i.id inner join `products` p on p.id = i.product_id inner join clients c on c.id = o.client_id inner join brands b on p.brand_id = b.id inner join categories cc on p.category_id = cc.id  where ol.order_id = '{$row['order_id']}' ");
+                            $olist = $conn->query("SELECT ol.*,p.name,b.name as bname,concat(c.firstname,' ',c.lastname) as name,c.email,o.date_created,cc.category,p.variant, o.payment_method FROM order_list ol inner join orders o on o.id = ol.order_id inner join `products` p on p.id = ol.product_id inner join clients c on c.id = o.client_id inner join brands b on p.brand_id = b.id inner join categories cc on p.category_id = cc.id  where ol.order_id = '{$row['order_id']}' ");
                             while($roww = $olist->fetch_assoc()):
                                 $gtotal += $roww['quantity'] * $roww['price'];
                     ?>

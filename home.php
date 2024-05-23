@@ -97,18 +97,18 @@ $brands = isset($_GET['b']) ? json_decode(urldecode($_GET['b'])) : array();
                             foreach($row as $k=> $v){
                                 $row[$k] = trim(stripslashes($v));
                             }
-                            $inventory = $conn->query("SELECT distinct(`price`) FROM inventory where product_id = ".$row['id']." order by `price` asc");
-                            $inv = array();
-                            while($ir = $inventory->fetch_assoc()){
-                                $inv[] = format_num($ir['price']);
-                            }
-                            $price = '';
-                            if(isset($inv[0]))
-                            $price .= $inv[0];
-                            if(count($inv) > 1){
-                            $price .= " ~ ".$inv[count($inv) - 1];
-
-                            }
+                            // $product_price = $conn->query("SELECT distinct(`price`) FROM products where id = ".$row['id']." order by `price` asc");
+                            // $inv = array();
+                            // while($ir = $product_price->fetch_assoc()){
+                            //     $inv[] = format_num($ir['price']);
+                            // }
+                            // $price = '';
+                            // if(isset($inv[0]))
+                            // $price .= $inv[0];
+                            // if(count($inv) > 1){
+                            // $price .= " ~ ".$inv[count($inv) - 1];
+                            // }
+                            $price = $row['price'];
                     ?>
                     <div class="col mb-5">
                         <a class="card product-item text-reset text-decoration-none" href=".?p=view_product&id=<?php echo md5($row['id']) ?>">

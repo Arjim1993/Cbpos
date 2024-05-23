@@ -81,12 +81,14 @@
 <div class="container">
   <?php 
     $files = array();
+    if (file_exists(base_app.'uploads/banner')) {
       $fopen = scandir(base_app.'uploads/banner');
       foreach($fopen as $fname){
         if(in_array($fname,array('.','..')))
           continue;
         $files[]= validate_image('uploads/banner/'.$fname);
       }
+    }
   ?>
   <div id="tourCarousel"  class="carousel slide" data-ride="carousel" data-interval="3000">
       <div class="carousel-inner h-100">

@@ -11,9 +11,9 @@
                 <h3><b>Cart List</b></h3>
                 <hr class="border-dark">
                 <?php 
-                    $qry = $conn->query("SELECT c.*,p.name,i.price,p.id as pid,cc.category, b.name as `brand`,i.variant from `temporary_cart` c inner join `inventory` i on i.id=c.inventory_id inner join products p on p.id = i.product_id inner join brands b on p.brand_id = b.id inner join categories cc on p.category_id = cc.id where c.session = '".$_SESSION['visit']."'");
+                    $qry = $conn->query("SELECT c.*,p.name,p.price,p.id as pid,cc.category, b.name as `brand`,p.variant from `temporary_cart` c inner join products p on p.id = c.product_id inner join brands b on p.brand_id = b.id inner join categories cc on p.category_id = cc.id where c.session = '".$_SESSION['visit']."'");
                     if ($_settings->userdata('id')) {
-                        $qry = $conn->query("SELECT c.*,p.name,i.price,p.id as pid,cc.category, b.name as `brand`,i.variant from `cart` c inner join `inventory` i on i.id=c.inventory_id inner join products p on p.id = i.product_id inner join brands b on p.brand_id = b.id inner join categories cc on p.category_id = cc.id where c.client_id = ".$_settings->userdata('id'));
+                        $qry = $conn->query("SELECT c.*,p.name,p.price,p.id as pid,cc.category, b.name as `brand`,p.variant from `cart` c inner join products p on p.id = c.product_id inner join brands b on p.brand_id = b.id inner join categories cc on p.category_id = cc.id where c.client_id = ".$_settings->userdata('id'));
                     }
                     
                     while($row= $qry->fetch_assoc()):

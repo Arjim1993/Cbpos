@@ -39,14 +39,14 @@
                         </p>
                       </a>
                     </li>
-                    <li class="nav-item dropdown">
+                    <!-- <li class="nav-item dropdown">
                       <a href="<?php echo base_url ?>admin/?page=inventory" class="nav-link nav-inventory">
                         <i class="nav-icon fas fa-clipboard-list"></i>
                         <p>
                           Inventory List
                         </p>
                       </a>
-                    </li>
+                    </li> -->
                     <li class="nav-item dropdown">
                       <a href="<?php echo base_url ?>admin/?page=orders" class="nav-link nav-orders">
                         <i class="nav-icon fas fa-list"></i>

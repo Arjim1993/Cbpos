@@ -169,6 +169,7 @@ Class Master extends DBConnection {
 			if(!in_array($k,array('id'))){
 				if(!empty($data)) $data .=",";
 				$v = addslashes($v);
+				if ($k == "initial") $data .= " `available`='{$this->conn->real_escape_string($v)}', ";
 				$data .= " `{$k}`='{$this->conn->real_escape_string($v)}' ";
 			}
 		}
@@ -184,6 +185,18 @@ Class Master extends DBConnection {
 		if(empty($id)){
 			$sql = "INSERT INTO `products` set {$data} ";
 		}else{
+			$data = "";
+			foreach($_POST as $k =>$v){
+				if(!in_array($k,array('id'))){
+					if(!empty($data)) $data .=",";
+					$v = addslashes($v);
+					if ($k == "initial") {
+						$data .= " `available`='{$this->conn->real_escape_string($v)}' ";
+					} else {
+						$data .= " `{$k}`='{$this->conn->real_escape_string($v)}' ";
+					}
+				}
+			}
 			$sql = "UPDATE `products` set {$data} where id = '{$id}' ";
 		}
 		$save = $this->conn->query($sql);
@@ -387,11 +400,11 @@ Class Master extends DBConnection {
 		}
 		$sql = "INSERT INTO `temporary_cart` set {$data} ";
 		if ($this->settings->userdata('id')) {
-			$check = $this->conn->query("SELECT * FROM `cart` where `inventory_id` = '{$inventory_id}' and client_id = ".$this->settings->userdata('id'))->num_rows;
+			$check = $this->conn->query("SELECT * FROM `cart` where `product_id` = '{$product_id}' and client_id = ".$this->settings->userdata('id'))->num_rows;
 			if($this->capture_err())
 				return $this->capture_err();
 			if($check > 0){
-				$sql = "UPDATE `cart` set quantity = quantity + {$quantity} where `inventory_id` = '{$inventory_id}' and client_id = ".$this->settings->userdata('id');
+				$sql = "UPDATE `cart` set quantity = quantity + {$quantity} where `product_id` = '{$product_id}' and client_id = ".$this->settings->userdata('id');
 			}else{
 				$sql = "INSERT INTO `cart` set {$data} ";
 			}
@@ -514,13 +527,14 @@ Class Master extends DBConnection {
 		if($save_order){
 			$order_id = $this->conn->insert_id;
 			$data = '';
-			$cart = $this->conn->query("SELECT c.*,p.name,i.price,p.id as pid from `cart` c inner join `inventory` i on i.id=c.inventory_id inner join products p on p.id = i.product_id where c.client_id ='{$client_id}' ");
+			$cart = $this->conn->query("SELECT c.*,p.name,p.price,p.id as pid from `cart` c inner join products p on p.id = c.product_id where c.client_id ='{$client_id}' ");
 			while($row= $cart->fetch_assoc()):
 				if(!empty($data)) $data .= ", ";
 				$total = $row['price'] * $row['quantity'];
 				$data .= "('{$order_id}','{$row['pid']}','{$row['quantity']}','{$row['price']}', $total)";
+				$this->conn->query("UPDATE products SET available=available-".$row['quantity']." WHERE id=".$row['pid']);
 			endwhile;
-			$list_sql = "INSERT INTO `order_list` (order_id,inventory_id,quantity,price,total) VALUES {$data} ";
+			$list_sql = "INSERT INTO `order_list` (order_id,product_id,quantity,price,total) VALUES {$data} ";
 			$save_olist = $this->conn->query($list_sql);
 			if($this->capture_err())
 				return $this->capture_err();

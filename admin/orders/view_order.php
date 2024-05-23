@@ -43,7 +43,7 @@ if($order->num_rows > 0){
                 </thead>
                 <tbody>
                     <?php 
-                        $olist = $conn->query("SELECT o.*,p.name,b.name as bname, i.variant FROM order_list o inner join inventory i on o.inventory_id = i.id inner join products p on i.product_id = p.id inner join brands b on p.brand_id = b.id where o.order_id = '{$id}' ");
+                        $olist = $conn->query("SELECT o.*,p.name,b.name as bname, p.variant FROM order_list o inner join products p on o.product_id = p.id inner join brands b on p.brand_id = b.id where o.order_id = '{$id}' ");
                         while($row = $olist->fetch_assoc()):
                         foreach($row as $k => $v){
                             $row[$k] = trim(stripslashes($v));

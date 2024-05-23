@@ -1,27 +1,29 @@
 <?php 
  $products = $conn->query("SELECT p.*,b.name as bname,c.category FROM `products` p inner join brands b on p.brand_id = b.id inner join categories c on p.category_id = c.id where md5(p.id) = '{$_GET['id']}' ");
+ $fileO = array();
  if($products->num_rows > 0){
-     foreach($products->fetch_assoc() as $k => $v){
-         $$k= stripslashes($v);
-     }
-    $upload_path = base_app.'/uploads/product_'.$id;
+    $row = $products->fetch_assoc();
+     // foreach($products->fetch_assoc() as $k => $v){
+     //     $$k= stripslashes($v);
+     // }
+    $upload_path = base_app.'/uploads/product_'.$row['id'];
     $img = "";
     if(is_dir($upload_path)){
         $fileO = scandir($upload_path);
         if(isset($fileO[2]))
-            $img = "uploads/product_".$id."/".$fileO[2];
+            $img = "uploads/product_".$row['id']."/".$fileO[2];
         // var_dump($fileO);
     }
-    $inventory = $conn->query("SELECT * FROM inventory where product_id = ".$id." order by variant asc");
-    $inv = array();
-    while($ir = $inventory->fetch_assoc()){
-        $ir['price'] = format_num($ir['price']);
-        $ir['stock'] = $ir['quantity'];
-        $sold = $conn->query("SELECT sum(quantity) FROM `order_list` where inventory_id = '{$ir['id']}' and order_id in (SELECT order_id from `sales`)")->fetch_array()[0];
-        $sold = $sold > 0 ? $sold : 0;
-        $ir['stock'] = $ir['stock'] - $sold;
-        $inv[] = $ir;
-    }
+    // $inventory = $conn->query("SELECT * FROM inventory where product_id = ".$id." order by variant asc");
+    // $inv = array();
+    // while($ir = $inventory->fetch_assoc()){
+    //     $ir['price'] = format_num($ir['price']);
+    //     $ir['stock'] = $ir['quantity'];
+    //     $sold = $conn->query("SELECT sum(quantity) FROM `order_list` where inventory_id = '{$ir['id']}' and order_id in (SELECT order_id from `sales`)")->fetch_array()[0];
+    //     $sold = $sold > 0 ? $sold : 0;
+    //     $ir['stock'] = $ir['stock'] - $sold;
+    //     $inv[] = $ir;
+    // }
  }
  
 ?>
@@ -53,27 +55,19 @@
             </div>
             <div class="col-md-6">
                 <!-- <div class="small mb-1">SKU: BST-498</div> -->
-                <h1 class="display-5 fw-bolder border-bottom border-primary pb-1"><?php echo $name ?></h1>
-                <p class="m-0"><small>Brand: <?php echo $bname ?></small></p>
+                <h1 class="display-5 fw-bolder border-bottom border-primary pb-1"><?php echo $row['name'] ?></h1>
+                <p class="m-0"><small>Brand: <?php echo $row['bname'] ?></small></p>
                 <div class="fs-5 mb-5">
-                &#8369; <span id="price"><?php echo isset($inv[0]['price']) ?  format_num($inv[0]['price']) : "--" ?></span>
+                &#8369; <span id="price"><?php echo isset($row['price']) ?  format_num($row['price']) : "--" ?></span>
                 <br>
-                <span><small><span class="text-muted">Available Stock:</span> <span id="avail"><?php echo isset($inv[0]['stock']) ? format_num($inv[0]['stock']) : "--" ?></span></small></span>
+                <span><small><span class="text-muted">Available Stock:</span> <span id="avail"><?php echo isset($row['available']) ? format_num($row['available']) : "--" ?></span></small></span>
                 <h5>Variant</h5>
-                <?php 
-                    $active = false;
-                foreach($inv as $k => $v):
-                ?>
-                <span class="variant-item border rounded-pill bg-gradient-light mr-2 text-xs px-3 <?= (!$active) ? "active" : "" ?>" data-key = "<?= $k ?>"><?= $v['variant'] ?></span>
-                <?php 
-                    $active = true;
-                     endforeach;
-                ?>
+                <span class="variant-item border rounded-pill bg-gradient-light mr-2 text-xs px-3 active" data-key="0"><?php echo $row['variant']; ?></span>
                 </div>
                 <form action="" id="add-cart">
                 <div class="d-flex">
-                    <input type="hidden" name="price" value="<?php echo isset($inv[0]['price']) ? $inv[0]['price'] : 0 ?>">
-                    <input type="hidden" name="inventory_id" value="<?php echo isset($inv[0]['id']) ? $inv[0]['id'] : '' ?>">
+                    <input type="hidden" name="price" value="<?php echo isset($row['price']) ? $row['price'] : 0 ?>">
+                    <input type="hidden" name="product_id" value="<?php echo isset($row['id']) ? $row['id'] : '' ?>">
                     <input class="form-control text-center me-3" id="inputQuantity" type="num" value="1" style="max-width: 3rem" name="quantity" />
                     <button class="btn btn-outline-dark flex-shrink-0" type="submit">
                         <i class="bi-cart-fill me-1"></i>
@@ -81,7 +75,7 @@
                     </button>
                 </div>
                 </form>
-                <p class="lead"><?php echo stripslashes(html_entity_decode($specs)) ?></p>
+                <p class="lead"><?php echo stripslashes(html_entity_decode($row['specs'])) ?></p>
                 
             </div>
         </div>
@@ -93,7 +87,7 @@
         <h2 class="fw-bolder mb-4">Related products</h2>
         <div class="row gx-4 gx-lg-5 row-cols-1 row-cols-md-3 row-cols-xl-4 justify-content-center">
         <?php 
-            $products = $conn->query("SELECT p.*,b.name as bname,c.category  FROM `products` p inner join brands b on p.brand_id = b.id inner join categories c on p.category_id = c.id where p.status = 1 and (p.category_id = '{$category_id}' or p.brand_id = '{$brand_id}') and p.id !='{$id}' order by rand() limit 4 ");
+            $products = $conn->query("SELECT p.*,b.name as bname,c.category  FROM `products` p inner join brands b on p.brand_id = b.id inner join categories c on p.category_id = c.id where p.status = 1 and (p.category_id = '{$row['category_id']}' or p.brand_id = '{$row['brand_id']}') and p.id !='{$row['id']}' order by rand() limit 4 ");
             while($row = $products->fetch_assoc()):
                 $upload_path = base_app.'/uploads/product_'.$row['id'];
                 $img = "";
@@ -106,18 +100,18 @@
                 foreach($row as $k=> $v){
                     $row[$k] = trim(stripslashes($v));
                 }
-                $rinventory = $conn->query("SELECT distinct(`price`) FROM inventory where product_id = ".$row['id']." order by `price` asc");
-                $rinv = array();
-                while($ir = $rinventory->fetch_assoc()){
-                    $rinv[] = format_num($ir['price']);
-                }
-                $price = '';
-                if(isset($rinv[0]))
-                $price .= $rinv[0];
-                if(count($rinv) > 1){
-                $price .= " ~ ".$rinv[count($rinv) - 1];
-
-                }
+                // $rinventory = $conn->query("SELECT distinct(`price`) FROM inventory where product_id = ".$row['id']." order by `price` asc");
+                // $rinv = array();
+                // while($ir = $rinventory->fetch_assoc()){
+                //     $rinv[] = format_num($ir['price']);
+                // }
+                // $price = '';
+                // if(isset($rinv[0]))
+                // $price .= $rinv[0];
+                // if(count($rinv) > 1){
+                // $price .= " ~ ".$rinv[count($rinv) - 1];
+                // }
+                $price = $row['price'];
         ?>
             <div class="col mb-5">
                 <a class="card product-item text-reset text-decoration-none" href=".?p=view_product&id=<?php echo md5($row['id']) ?>">
@@ -143,7 +137,7 @@
     </div>
 </section>
 <script>
-    var inv = $.parseJSON('<?php echo json_encode($inv) ?>');
+    var prod = $.parseJSON('<?php echo json_encode($row) ?>');
     $(function(){
         $('.view-image').click(function(){
             var _img = $(this).find('img').attr('src');
@@ -155,11 +149,11 @@
             var k = $(this).attr('data-key');
             $('.variant-item').removeClass("active")
             $(this).addClass("active")
-            if(!!inv[k]){
-                $('#price').text(inv[k].price)
-                $('[name="price"]').val(inv[k].price)
-                $('#avail').text(inv[k].stock)
-                $('[name="inventory_id"]').val(inv[k].id)
+            if(!!prod[k]){
+                $('#price').text(prod.price)
+                $('[name="price"]').val(prod.price)
+                $('#avail').text(prod.available)
+                $('[name="product_id"]').val(prod.id)
             }else{
                 alert_toast("An error occured",'error')
             }

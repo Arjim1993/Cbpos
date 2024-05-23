@@ -28,6 +28,9 @@
 						<th>Name</th>
 						<th>Product</th>
 						<th>Description</th>
+						<th>Variant</th>
+						<th>Available stock</th>
+						<th>Price</th>
 						<th>Status</th>
 						<th>Action</th>
 					</tr>
@@ -47,6 +50,9 @@
 							<td><?php echo $row['name'] ?></td>
 							<td><?php echo $row['bname'] ?></td>
 							<td ><p class="m-0 truncate"><?php echo $row['specs'] ?></p></td>
+							<td ><?php echo $row['variant'] ?></td>
+							<td ><?php echo $row['available'] ?></td>
+							<td ><?php echo $row['price'] ?></td>
 							<td class="text-center">
                                 <?php if($row['status'] == 1): ?>
                                     <span class="badge badge-success px-3 rounded-pill">Active</span>

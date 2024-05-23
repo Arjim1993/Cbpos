@@ -4,7 +4,7 @@ $total = 0;
 if ($_settings->userdata('id')) {
     $query_temp = $conn->query("SELECT * FROM temporary_cart where session='".$_SESSION['visit']."'");
     while($row= $query_temp->fetch_assoc()) {
-        $conn->query("INSERT INTO cart(client_id,inventory_id,price,quantity,session) VALUES(".$_settings->userdata('id').",".$row['inventory_id'].",".$row['price'].",".$row['quantity'].",'".$_SESSION['visit']."')");
+        $conn->query("INSERT INTO cart(client_id,product_id,price,quantity,session) VALUES(".$_settings->userdata('id').",".$row['product_id'].",".$row['price'].",".$row['quantity'].",'".$_SESSION['visit']."')");
         $conn->query("DELETE FROM temporary_cart where id=".$row['id']);
     }
     ?>
@@ -32,7 +32,7 @@ if ($_settings->userdata('id')) {
     <?php
     exit;
 }
-    $qry = $conn->query("SELECT c.*,p.name,i.price,p.id as pid from `cart` c inner join `inventory` i on i.id=c.inventory_id inner join products p on p.id = i.product_id where c.client_id = ".$_settings->userdata('id'));
+    $qry = $conn->query("SELECT c.*,p.name,p.price,p.id as pid from `cart` c inner join products p on p.id = c.product_id where c.client_id = ".$_settings->userdata('id'));
     while($row= $qry->fetch_assoc()):
         $total += $row['price'] * $row['quantity'];
     endwhile;
