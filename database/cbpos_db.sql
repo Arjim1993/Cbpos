@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 23, 2024 at 02:44 AM
+-- Generation Time: May 23, 2024 at 07:52 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -58,20 +58,12 @@ INSERT INTO `brands` (`id`, `name`, `description`, `image_path`, `status`, `dele
 CREATE TABLE `cart` (
   `id` int(30) NOT NULL,
   `client_id` int(30) DEFAULT NULL,
-  `inventory_id` int(30) NOT NULL,
+  `product_id` int(30) NOT NULL,
   `price` double NOT NULL,
   `quantity` int(30) NOT NULL,
   `date_created` datetime NOT NULL DEFAULT current_timestamp(),
   `session` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `cart`
---
-
-INSERT INTO `cart` (`id`, `client_id`, `inventory_id`, `price`, `quantity`, `date_created`, `session`) VALUES
-(30, 5, 9, 89, 1, '2024-05-16 10:18:22', NULL),
-(35, 5, 10, 45, 1, '2024-05-23 07:27:55', 'obpTUkAzkQXSY4pfmCwPVxpZOW2mOCTzG5Etjbfcbe9pQnbksUvgw8NEfaiAbEPk');
 
 -- --------------------------------------------------------
 
@@ -183,7 +175,8 @@ INSERT INTO `orders` (`id`, `ref_code`, `client_id`, `delivery_address`, `paymen
 (19, '20240500004', 5, '09 Mabini Street', 'cod', 0, 55, 3, 1, '2024-05-15 22:49:53', '2024-05-16 10:21:19'),
 (20, '20240500005', 5, '09 Mabini Street', 'cod', 0, 55, 3, 1, '2024-05-15 22:52:14', '2024-05-16 10:16:34'),
 (21, '20240500001', 5, '09 Mabini Street', 'cod', 0, 45, 3, 1, '2024-05-16 10:14:52', '2024-05-16 10:16:08'),
-(22, '20240500002', 5, '09 Mabini Street', 'cod', 0, 89, 3, 1, '2024-05-16 10:18:30', '2024-05-16 10:19:09');
+(22, '20240500002', 5, '09 Mabini Street', 'cod', 0, 89, 3, 1, '2024-05-16 10:18:30', '2024-05-16 10:19:09'),
+(23, '20240500003', 5, '09 Mabini Street', 'cod', 0, 318, 0, 0, '2024-05-23 13:39:17', NULL);
 
 -- --------------------------------------------------------
 
@@ -194,7 +187,7 @@ INSERT INTO `orders` (`id`, `ref_code`, `client_id`, `delivery_address`, `paymen
 CREATE TABLE `order_list` (
   `id` int(30) NOT NULL,
   `order_id` int(30) NOT NULL,
-  `inventory_id` int(30) NOT NULL,
+  `product_id` int(30) NOT NULL,
   `quantity` int(30) NOT NULL,
   `price` double NOT NULL,
   `total` double NOT NULL
@@ -204,8 +197,9 @@ CREATE TABLE `order_list` (
 -- Dumping data for table `order_list`
 --
 
-INSERT INTO `order_list` (`id`, `order_id`, `inventory_id`, `quantity`, `price`, `total`) VALUES
-(23, 21, 8, 1, 45, 45);
+INSERT INTO `order_list` (`id`, `order_id`, `product_id`, `quantity`, `price`, `total`) VALUES
+(23, 21, 8, 1, 45, 45),
+(25, 23, 6, 2, 159, 318);
 
 -- --------------------------------------------------------
 
@@ -219,6 +213,10 @@ CREATE TABLE `products` (
   `category_id` int(30) NOT NULL,
   `name` varchar(250) NOT NULL,
   `specs` text NOT NULL,
+  `variant` text DEFAULT 'white',
+  `available` int(11) NOT NULL DEFAULT 20,
+  `initial` int(11) NOT NULL DEFAULT 20,
+  `price` int(11) NOT NULL DEFAULT 1,
   `status` tinyint(1) NOT NULL DEFAULT 1,
   `delete_flag` tinyint(1) NOT NULL DEFAULT 0,
   `date_created` datetime NOT NULL DEFAULT current_timestamp()
@@ -228,11 +226,14 @@ CREATE TABLE `products` (
 -- Dumping data for table `products`
 --
 
-INSERT INTO `products` (`id`, `brand_id`, `category_id`, `name`, `specs`, `status`, `delete_flag`, `date_created`) VALUES
-(6, 1, 1, 'Arjim sisig', '&lt;p&gt;sobrang sarap ng sisig ko&lt;/p&gt;', 1, 0, '2024-05-15 21:25:43'),
-(7, 5, 4, 'paa', '', 1, 0, '2024-05-15 21:44:32'),
-(8, 4, 5, 'clamshell', '', 1, 0, '2024-05-16 09:28:50'),
-(10, 6, 5, 'Thick short', '&lt;p&gt;nothing&lt;/p&gt;', 1, 0, '2024-05-23 07:40:49');
+INSERT INTO `products` (`id`, `brand_id`, `category_id`, `name`, `specs`, `variant`, `available`, `initial`, `price`, `status`, `delete_flag`, `date_created`) VALUES
+(6, 1, 1, 'Arjim sisig', '&lt;p&gt;sobrang sarap ng sisig ko&lt;/p&gt;', 'white', 19, 20, 159, 1, 0, '2024-05-15 21:25:43'),
+(7, 5, 4, 'paa', '', 'white', 20, 20, 1, 1, 0, '2024-05-15 21:44:32'),
+(8, 4, 5, 'clamshell', '', 'white', 20, 20, 1, 1, 0, '2024-05-16 09:28:50'),
+(10, 6, 5, 'Thick short', '&lt;p&gt;nothing&lt;/p&gt;', 'white', 20, 20, 1, 1, 0, '2024-05-23 07:40:49'),
+(11, 6, 4, 'Bamboo Shirt', '&lt;p&gt;nothing&lt;/p&gt;', 'white', 34, 34, 1, 1, 0, '2024-05-23 11:03:39'),
+(12, 6, 4, 'Watusi', '&lt;p&gt;nothing&lt;/p&gt;', 'white', 34, 34, 1, 1, 0, '2024-05-23 11:06:27'),
+(13, 5, 5, 'Test', '&lt;p&gt;nothing&lt;/p&gt;', 'white', 37, 22, 120, 1, 0, '2024-05-23 11:50:00');
 
 -- --------------------------------------------------------
 
@@ -253,7 +254,8 @@ CREATE TABLE `sales` (
 
 INSERT INTO `sales` (`id`, `order_id`, `total_amount`, `date_created`) VALUES
 (7, 21, 45, '2024-05-16 10:14:58'),
-(8, 21, 55, '2024-05-16 10:14:55');
+(8, 21, 55, '2024-05-16 10:14:55'),
+(9, 23, 318, '2024-05-23 13:39:17');
 
 -- --------------------------------------------------------
 
@@ -287,7 +289,7 @@ INSERT INTO `system_info` (`id`, `meta_field`, `meta_value`) VALUES
 CREATE TABLE `temporary_cart` (
   `id` int(30) NOT NULL,
   `session` text DEFAULT NULL,
-  `inventory_id` int(30) NOT NULL,
+  `product_id` int(30) NOT NULL,
   `price` double NOT NULL,
   `quantity` int(30) NOT NULL,
   `date_created` datetime NOT NULL DEFAULT current_timestamp()
@@ -334,8 +336,8 @@ ALTER TABLE `brands`
 --
 ALTER TABLE `cart`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `inventory_id` (`inventory_id`),
-  ADD KEY `client_id` (`client_id`);
+  ADD KEY `client_id` (`client_id`),
+  ADD KEY `product_id` (`product_id`) USING BTREE;
 
 --
 -- Indexes for table `categories`
@@ -368,8 +370,8 @@ ALTER TABLE `orders`
 --
 ALTER TABLE `order_list`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `inventory_id` (`inventory_id`),
-  ADD KEY `order_id` (`order_id`);
+  ADD KEY `order_id` (`order_id`),
+  ADD KEY `product_id` (`product_id`) USING BTREE;
 
 --
 -- Indexes for table `products`
@@ -418,7 +420,7 @@ ALTER TABLE `brands`
 -- AUTO_INCREMENT for table `cart`
 --
 ALTER TABLE `cart`
-  MODIFY `id` int(30) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=36;
+  MODIFY `id` int(30) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
 
 --
 -- AUTO_INCREMENT for table `categories`
@@ -442,25 +444,25 @@ ALTER TABLE `inventory`
 -- AUTO_INCREMENT for table `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `id` int(30) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
+  MODIFY `id` int(30) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
 
 --
 -- AUTO_INCREMENT for table `order_list`
 --
 ALTER TABLE `order_list`
-  MODIFY `id` int(30) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
+  MODIFY `id` int(30) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
 
 --
 -- AUTO_INCREMENT for table `products`
 --
 ALTER TABLE `products`
-  MODIFY `id` int(30) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id` int(30) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT for table `sales`
 --
 ALTER TABLE `sales`
-  MODIFY `id` int(30) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(30) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `system_info`
@@ -482,7 +484,6 @@ ALTER TABLE `users`
 -- Constraints for table `cart`
 --
 ALTER TABLE `cart`
-  ADD CONSTRAINT `cart_ibfk_1` FOREIGN KEY (`inventory_id`) REFERENCES `inventory` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `cart_ibfk_2` FOREIGN KEY (`client_id`) REFERENCES `clients` (`id`) ON DELETE CASCADE;
 
 --
@@ -501,8 +502,7 @@ ALTER TABLE `orders`
 -- Constraints for table `order_list`
 --
 ALTER TABLE `order_list`
-  ADD CONSTRAINT `order_list_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `order_list_ibfk_2` FOREIGN KEY (`inventory_id`) REFERENCES `inventory` (`id`) ON DELETE CASCADE;
+  ADD CONSTRAINT `order_list_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `products`
