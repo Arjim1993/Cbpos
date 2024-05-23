@@ -76,10 +76,16 @@ $brands = isset($_GET['b']) ? json_decode(urldecode($_GET['b'])) : array();
                 <div class="row gx-4 gx-lg-4 row-cols-md-3 row-cols-xl-4 ">
                     <?php 
                         $where = "";
-                        if(count($brands)>0)
-                        $where = " and p.brand_id in (".implode(",",$brands).") " ;
-                        $products = $conn->query("SELECT p.*,b.name as bname,c.category FROM `products` p inner join brands b on p.brand_id = b.id inner join categories c on p.category_id = c.id where p.status = 1 {$where} order by rand() ");
-                        while($row = $products->fetch_assoc()):
+                        $sql = "";
+                        if(isset($_GET['b']) && count($brands)>0) {
+                            $where = " and p.brand_id in (".implode(",",$brands).") " ;
+                            $sql = "SELECT p.*,b.name as bname,c.category FROM `products` p inner join brands b on p.brand_id = b.id inner join categories c on p.category_id = c.id where p.status = 1 {$where} order by rand() ";
+                        } elseif (!isset($_GET['b'])) {
+                            $sql = "SELECT p.*,b.name as bname,c.category FROM `products` p inner join brands b on p.brand_id = b.id inner join categories c on p.category_id = c.id where p.status = 1 order by rand() ";
+                        }
+                        if ($sql) {
+                        $products = $conn->query($sql);
+                        while($row = $products->fetch_assoc()) {
                             $upload_path = base_app.'/uploads/product_'.$row['id'];
                             $img = "";
                             if(is_dir($upload_path)){
@@ -123,7 +129,7 @@ $brands = isset($_GET['b']) ? json_decode(urldecode($_GET['b'])) : array();
                             </div>
                         </a>
                     </div>
-                    <?php endwhile; ?>
+                    <?php }} ?>
                 </div>
             </div>
         </div>
